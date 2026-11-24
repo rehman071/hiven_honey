@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="en" class="intro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hiven — Raw Honey</title>
+
+  <!-- Preconnect to asset proxy and Google Fonts -->
+  <link rel="preconnect" href="https://images.higgs.ai" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Playfair+Display:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ==========================================================================
+       1. Design Tokens & Base Reset
+       ========================================================================== */
+    :root {
+      --bg: #FAF4EC;
+      --hero-bg: #FBF4E9;
+      --bg3: #F2E6D3;
+      --accent: #C79A67;
+      --ink: #2A2118;
+      --ink-sub: #4a3d30;
+      --mark: #EDE3D4;
+      --dark: #2B1F14;
+      --light: #F6EEE2;
+
+      /* Scaling variables written dynamically on resize */
+      --s: 1px;
+      --c: 1px;
+      --fl: 0px;
+      --ft: 0px;
+
+      /* Typography & component sizing variables written dynamically */
+      --chip: 116px;
+      --cn: 21px;
+      --cs: 17.5px;
+      --rt: 96px;
+      --rh: 25px;
+      --rp: 16.5px;
+      --rg: 40px;
+      --rw: 330px;
+      --th: 34px;
+      --tf: 16px;
+      --tb: 30px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Outfit', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    img {
+      display: block;
+      height: auto;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       2. Fixed Stage & Shared Layers
+       ========================================================================== */
+    .stage {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100svh;
+      overflow: hidden;
+      background: var(--bg);
+      touch-action: none;
+    }
+
+    .layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* 1440x900 Cover Frame for background plates */
+    .frame {
+      position: absolute;
+      left: var(--fl);
+      top: var(--ft);
+      width: calc(1440 * var(--s));
+      height: calc(900 * var(--s));
+      transform-origin: 50% 50%;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       3. Navigation (z-index: 20)
+       ========================================================================== */
+    nav.nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: calc(28 * var(--c)) calc(42 * var(--c)) 0;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 400;
+      font-size: max(12px, calc(17 * var(--c)));
+      letter-spacing: 0.01em;
+      color: var(--ink);
+      opacity: 1;
+      transition: color 0.5s ease;
+    }
+
+    html.portrait nav.nav {
+      padding: max(14px, calc(20 * var(--c))) max(14px, 4.5vw) 0;
+    }
+
+    nav.nav.light {
+      color: var(--light);
+    }
+
+    nav.nav a {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 6px 2px;
+      color: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    nav.nav a::after {
+      content: '';
+      position: absolute;
+      left: 2px;
+      right: 2px;
+      bottom: 3px;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.35s ease;
+    }
+
+    nav.nav a:hover::after,
+    nav.nav a:focus-visible::after {
+      transform: scaleX(1);
+    }
+
+    nav.nav a:focus-visible {
+      outline: none;
+    }
+
+    /* ==========================================================================
+       4. Layer 1 — Hero Scene (z-index: 1)
+       ========================================================================== */
+    .hero {
+      z-index: 1;
+      background: var(--hero-bg);
+      pointer-events: none;
+      will-change: opacity;
+    }
+
+    .hero .hero-plate,
+    .hero .hero-vid {
+      position: absolute;
+      width: 102.78%;
+      left: -0.14%;
+      top: -5.22%;
+      pointer-events: none;
+    }
+
+    .hero .hero-plate {
+      z-index: 0;
+    }
+
+    .hero .hero-vid {
+      aspect-ratio: 1168 / 784;
+      height: auto;
+      object-fit: cover;
+      opacity: 0;
+      z-index: 1;
+      will-change: opacity;
+    }
+
+    .wordmark {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      color: var(--mark);
+      line-height: 1;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      text-align: center;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      opacity: 1;
+    }
+
+    /* ==========================================================================
+       5. Layer 2 — Ingredients Ring (z-index: 2)
+       ========================================================================== */
+    .ingr {
+      z-index: 2;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .chip {
+      position: absolute;
+      transform: translate(-50%, calc(-0.5 * var(--chip)));
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .chip .in-w {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0;
+      transform: scale(0.7);
+      will-change: opacity, transform;
+      transition:
+        opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1),
+        transform 0.7s cubic-bezier(0.3, 0, 0.15, 1);
+    }
+
+    .ingr.on .chip .in-w {
+      opacity: 1;
+      transform: none;
+    }
+
+    .chip .circle {
+      width: var(--chip);
+      height: var(--chip);
+      border-radius: 50%;
+      border: 1px solid rgba(42, 33, 24, 0.18);
+      padding: 4%;
+      background: var(--bg);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chip .cname {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 500;
+      font-size: var(--cn);
+      line-height: 1.2;
+      color: var(--ink);
+      margin-top: calc(0.2 * var(--chip));
+      white-space: nowrap;
+    }
+
+    .chip .csub {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 400;
+      font-size: var(--cs);
+      line-height: 1.3;
+      color: var(--ink-sub);
+      margin-top: 2px;
+      max-width: calc(2.3 * var(--chip));
+    }
+
+    /* Sheet crops for both chips and benefit thumbnails */
+    i.crop {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-size: 204.8% 204.8%;
+      background-repeat: no-repeat;
+    }
+
+    i.crop.s1 {
+      background-image: url("https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_060932_f7a02a74-f897-4398-b9ab-96ef9898e8bc.png&w=1024&q=85");
+    }
+
+    i.crop.s2 {
+      background-image: url("https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_060932_90850cb3-1ec6-4622-b548-a8ca88dd30f0.png&w=1024&q=85");
+    }
+
+    i.crop.q-tl { background-position: 1.15% 1.15%; }
+    i.crop.q-tr { background-position: 98.85% 1.15%; }
+    i.crop.q-bl { background-position: 1.15% 98.85%; }
+    i.crop.q-br { background-position: 98.85% 98.85%; }
+
+    /* ==========================================================================
+       6. Layer 3 — Benefits Panel (z-index: 3)
+       ========================================================================== */
+    .bene {
+      z-index: 3;
+      background: var(--bg3);
+      transform: translate3d(0, 100%, 0);
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .rows {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      gap: var(--rg);
+      opacity: 0;
+      will-change: opacity;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: calc(0.28 * var(--rt));
+      opacity: 0;
+      transform: translateX(60px);
+      will-change: opacity, transform;
+      transition:
+        opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+        transform 1s cubic-bezier(0.3, 0, 0.05, 1);
+    }
+
+    .bene.on .row {
+      opacity: 1;
+      transform: none;
+    }
+
+    .bene.on .row:nth-child(2) {
+      transition-delay: 0.12s, 0.12s;
+    }
+
+    .bene.on .row:nth-child(3) {
+      transition-delay: 0.24s, 0.24s;
+    }
+
+    .rthumb {
+      width: var(--rt);
+      height: var(--rt);
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(42, 33, 24, 0.16);
+      padding: 4%;
+      background: var(--bg3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rtext {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .rtext h3 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 500;
+      font-size: var(--rh);
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    .rtext p {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 400;
+      font-size: var(--rp);
+      line-height: 1.45;
+      color: var(--ink-sub);
+      margin-top: 0.25em;
+      max-width: var(--rw);
+    }
+
+    /* ==========================================================================
+       7. Layer 4 — Final Kitchen Scene (z-index: 4)
+       ========================================================================== */
+    .scene {
+      z-index: 4;
+      background: var(--dark);
+      transform: translate3d(0, 100%, 0);
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .scene.on {
+      pointer-events: auto;
+    }
+
+    .scene .scene-plate {
+      position: absolute;
+      width: 100%;
+      left: 0;
+      top: -3.75%;
+      pointer-events: none;
+    }
+
+    .cta {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(92vw, 900px);
+      text-align: center;
+      color: var(--light);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .cta h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: var(--th);
+      letter-spacing: 0.2em;
+      line-height: 1.3;
+      color: var(--light);
+      opacity: 0;
+      transform: translateY(24px);
+      will-change: opacity, transform;
+      transition:
+        opacity 0.9s ease,
+        transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .scene.on .cta h2 {
+      opacity: 1;
+      transform: none;
+    }
+
+    .cta .discover {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      margin-top: var(--tb);
+      padding: 0.7em 2.2em;
+      border: 1px solid rgba(246, 238, 226, 0.7);
+      border-radius: 999px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 400;
+      font-size: var(--tf);
+      letter-spacing: 0.04em;
+      color: var(--light);
+      background-color: transparent;
+      text-decoration: none;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(18px);
+      will-change: opacity, transform;
+      transition:
+        opacity 0.9s ease,
+        transform 1s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.3s ease,
+        color 0.3s ease;
+    }
+
+    .scene.on .cta .discover {
+      opacity: 1;
+      transform: none;
+      transition:
+        opacity 0.9s ease 0.15s,
+        transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
+        background-color 0.3s ease 0s,
+        color 0.3s ease 0s;
+    }
+
+    .cta .discover:hover,
+    .cta .discover:focus-visible {
+      background-color: var(--light);
+      color: var(--dark);
+      outline: none;
+    }
+
+    /* ==========================================================================
+       8. Pinned Jar (z-index: 5) & Foreground Hand (z-index: 6)
+       ========================================================================== */
+    .jar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 5;
+      transform-origin: 50% 100%;
+      filter: drop-shadow(0 18px 24px rgba(42, 33, 24, 0.18));
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .hand {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 6;
+      transform-origin: 0 0;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       9. Intro Waiting & Fade-In States + Reduced Motion
+       ========================================================================== */
+    html.intro nav.nav,
+    html.intro .wordmark,
+    html.intro #heroFrame,
+    html.intro .jar,
+    html.intro .hand {
+      opacity: 0 !important;
+      transition: none !important;
+    }
+
+    html.intro-run nav.nav {
+      transition: opacity 0.35s ease-out 0s, color 0.5s ease;
+    }
+
+    html.intro-run .wordmark {
+      transition: opacity 0.45s ease-out 0.06s;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .chip .in-w,
+      .row,
+      .cta h2,
+      .cta .discover,
+      nav.nav,
+      .wordmark {
+        transition: none !important;
+      }
+      .chip .in-w,
+      .row,
+      .cta h2,
+      .cta .discover {
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" id="stage" aria-label="HIVEN Raw Honey Product Story">
+    <!-- 1. Navigation -->
+    <nav class="nav" id="nav" aria-label="Primary">
+      <a href="#home" data-to="0">Home</a>
+      <a href="#products" data-to="1">Products</a>
+      <a href="#about" data-to="2">About</a>
+      <a href="#reviews" data-to="2">Reviews</a>
+      <a href="#contact" data-to="3">Contact</a>
+    </nav>
+
+    <!-- 2. Hero Layer (Scene 0) -->
+    <section class="layer hero" id="hero" aria-label="Hero">
+      <div class="frame" id="heroFrame">
+        <img
+          class="hero-plate"
+          id="heroPlate"
+          src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_060932_bb1e06e4-8bd5-45a0-b4a4-24854cffb528.png&w=2048&q=85"
+          alt="Still misty lake with a dark basalt rock"
+        />
+        <video
+          class="hero-vid"
+          id="vidA"
+          muted
+          playsinline
+          preload="auto"
+          aria-hidden="true"
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261123_070127_46bf2fe6-4037-462d-aa6a-55d52b357a2d.mp4"
+        ></video>
+        <video
+          class="hero-vid"
+          id="vidB"
+          muted
+          playsinline
+          preload="auto"
+          aria-hidden="true"
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261123_070127_46bf2fe6-4037-462d-aa6a-55d52b357a2d.mp4"
+        ></video>
+      </div>
+      <h1 class="wordmark" id="wordmark">HIVEN</h1>
+    </section>
+
+    <!-- 3. Ingredients Layer (Scene 1) -->
+    <section class="layer ingr" id="ingr" aria-label="Ingredients">
+      <div class="chip" data-chip="acacia">
+        <div class="in-w">
+          <div class="circle"><i class="crop s1 q-tl" aria-hidden="true"></i></div>
+          <div class="cname">Wild Acacia</div>
+          <div class="csub">Floral &amp; light</div>
+        </div>
+      </div>
+
+      <div class="chip" data-chip="lavender">
+        <div class="in-w">
+          <div class="circle"><i class="crop s1 q-tr" aria-hidden="true"></i></div>
+          <div class="cname">Lavender</div>
+          <div class="csub">Calms and soothes</div>
+        </div>
+      </div>
+
+      <div class="chip" data-chip="honeycomb">
+        <div class="in-w">
+          <div class="circle"><i class="crop s1 q-bl" aria-hidden="true"></i></div>
+          <div class="cname">Honeycomb</div>
+          <div class="csub">Seals in the flavor</div>
+        </div>
+      </div>
+
+      <div class="chip" data-chip="pollen">
+        <div class="in-w">
+          <div class="circle"><i class="crop s1 q-br" aria-hidden="true"></i></div>
+          <div class="cname">Bee Pollen</div>
+          <div class="csub">Protein &amp; Zinc</div>
+        </div>
+      </div>
+
+      <div class="chip" data-chip="resin">
+        <div class="in-w">
+          <div class="circle"><i class="crop s2 q-tl" aria-hidden="true"></i></div>
+          <div class="cname">Bee Resin</div>
+          <div class="csub">Supports your defences</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Benefits Layer (Scene 2) -->
+    <section class="layer bene" id="bene" aria-label="Benefits">
+      <div class="rows" id="rows">
+        <article class="row">
+          <div class="rthumb"><i class="crop s2 q-tr" aria-hidden="true"></i></div>
+          <div class="rtext">
+            <h3>Clean Energy</h3>
+            <p>Natural sugars give steady energy that lasts all through the day.</p>
+          </div>
+        </article>
+
+        <article class="row">
+          <div class="rthumb"><i class="crop s2 q-bl" aria-hidden="true"></i></div>
+          <div class="rtext">
+            <h3>Soothes Throat</h3>
+            <p>One warm spoonful coats and calms a dry, tired throat.</p>
+          </div>
+        </article>
+
+        <article class="row">
+          <div class="rthumb"><i class="crop s2 q-br" aria-hidden="true"></i></div>
+          <div class="rtext">
+            <h3>Raw &amp; Unfiltered</h3>
+            <p>Never heated or filtered, so each enzyme and pollen grain is kept.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5. Final Kitchen Scene Layer (Scene 3) -->
+    <section class="layer scene" id="scene" aria-label="Discover Hiven">
+      <div class="frame" id="sceneFrame">
+        <img
+          class="scene-plate"
+          src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_060933_bddedf90-ba56-477b-9c32-901bc025bdb0.png&w=2048&q=85"
+          alt="Dark terracotta kitchen at dusk with a wooden pedestal"
+        />
+      </div>
+      <div class="cta" id="cta">
+        <h2>FROM THE HIVE,<br />STRAIGHT TO YOU.</h2>
+        <a href="#home" class="discover" id="discoverBtn">Discover</a>
+      </div>
+    </section>
+
+    <!-- 6. Pinned Honey Jar (z-index: 5) -->
+    <img class="jar" id="jar" alt="Hiven Raw Honey glass jar" />
+
+    <!-- 7. Foreground Hand (z-index: 6, drawn in front of jar) -->
+    <img class="hand" id="hand" alt="" aria-hidden="true" />
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ========================================================================
+         1. Constants & Exact Asset URLs
+         ======================================================================== */
+      const ASSETS = {
+        jar: {
+          url: 'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061027_50e61758-34cf-4e20-b115-380d40ae9a87.png&w=1024&q=85',
+          srcW: 1024,
+          srcH: 1024,
+          crop: { x: 214, y: 158, w: 592, h: 680 }
+        },
+        hand: {
+          url: 'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20261123_061028_dd300bd1-4172-4809-abac-c1b9e7660381.png&w=1024&q=85',
+          srcW: 1024,
+          srcH: 688,
+          crop: { x: 0, y: 240, w: 858, h: 262 }
+        }
+      };
+
+      const JAR_R = 680 / 592;
+      const HAND_R = 262 / 858;
+
+      const DESKTOP_CHIPS = {
+        acacia:    { x: 230,  y: 421 },
+        lavender:  { x: 454,  y: 268 },
+        honeycomb: { x: 720,  y: 196 },
+        pollen:    { x: 988,  y: 278 },
+        resin:     { x: 1212, y: 439 }
+      };
+
+      /* ========================================================================
+         2. DOM References
+         ======================================================================== */
+      const docEl      = document.documentElement;
+      const stageEl    = document.getElementById('stage');
+      const navEl      = document.getElementById('nav');
+      const heroEl     = document.getElementById('hero');
+      const heroFrame  = document.getElementById('heroFrame');
+      const wordmarkEl = document.getElementById('wordmark');
+      const ingrEl     = document.getElementById('ingr');
+      const beneEl     = document.getElementById('bene');
+      const rowsEl     = document.getElementById('rows');
+      const sceneEl    = document.getElementById('scene');
+      const ctaEl      = document.getElementById('cta');
+      const discoverEl = document.getElementById('discoverBtn');
+      const jarEl      = document.getElementById('jar');
+      const handEl     = document.getElementById('hand');
+      const vidA       = document.getElementById('vidA');
+      const vidB       = document.getElementById('vidB');
+
+      const chipEls = {};
+      ingrEl.querySelectorAll('.chip').forEach((el) => {
+        chipEls[el.dataset.chip] = el;
+      });
+
+      const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let reducedMotion = reduceMotionQuery.matches;
+      if (reduceMotionQuery.addEventListener) {
+        reduceMotionQuery.addEventListener('change', (e) => {
+          reducedMotion = e.matches;
+          if (reducedMotion) stopVideos();
+          else if (introDone) startHeroVideo();
+        });
+      }
+
+      /* ========================================================================
+         3. Browser Cutout Clean-up (Crop + 2x Alpha Erosion + 1x Feather)
+         ======================================================================== */
+      function loadImageCORS(url) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.decoding = 'async';
+          img.onload = () => resolve(img);
+          img.onerror = (err) => reject(err);
+          img.src = url;
+        });
+      }
+
+      /**
+       * Crops the cutout to its tight rectangle, erodes alpha twice with a
+       * 4-neighbour minimum filter (2 px total), feathers alpha once, and
+       * exports a 0.92-quality WebP object URL. Falls back to raw URL on error.
+       */
+      async function cleanCutout(spec) {
+        try {
+          const img = await loadImageCORS(spec.url);
+          const { x, y, w, h } = spec.crop;
+
+          // Scale source coordinates if proxy ever returns a different resolution
+          const sx = img.naturalWidth / spec.srcW;
+          const sy = img.naturalHeight / spec.srcH;
+
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+          if (!ctx) return spec.url;
+
+          ctx.drawImage(img, x * sx, y * sy, w * sx, h * sy, 0, 0, w, h);
+
+          const imgData = ctx.getImageData(0, 0, w, h);
+          const data = imgData.data;
+          const len = w * h;
+
+          let alphaA = new Uint8Array(len);
+          let alphaB = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+            alphaA[i] = data[(i << 2) + 3];
+          }
+
+          // Two passes of 4-neighbour minimum erosion
+          for (let pass = 0; pass < 2; pass++) {
+            for (let py = 0; py < h; py++) {
+              const row = py * w;
+              for (let px = 0; px < w; px++) {
+                const idx = row + px;
+                let m = alphaA[idx];
+                if (px > 0)     { const v = alphaA[idx - 1]; if (v < m) m = v; }
+                if (px < w - 1) { const v = alphaA[idx + 1]; if (v < m) m = v; }
+                if (py > 0)     { const v = alphaA[idx - w]; if (v < m) m = v; }
+                if (py < h - 1) { const v = alphaA[idx + w]; if (v < m) m = v; }
+                alphaB[idx] = m;
+              }
+            }
+            const tmp = alphaA;
+            alphaA = alphaB;
+            alphaB = tmp;
+          }
+
+          // One pass of weighted 4-neighbour feathering: (4*self + neighbours) / samples
+          for (let py = 0; py < h; py++) {
+            const row = py * w;
+            for (let px = 0; px < w; px++) {
+              const idx = row + px;
+              let sum = alphaA[idx] * 4;
+              let cnt = 4;
+              if (px > 0)     { sum += alphaA[idx - 1]; cnt++; }
+              if (px < w - 1) { sum += alphaA[idx + 1]; cnt++; }
+              if (py > 0)     { sum += alphaA[idx - w]; cnt++; }
+              if (py < h - 1) { sum += alphaA[idx + w]; cnt++; }
+              data[(idx << 2) + 3] = Math.round(sum / cnt);
+            }
+          }
+
+          ctx.putImageData(imgData, 0, 0);
+
+          const blob = await new Promise((resolve) => {
+            canvas.toBlob((b) => {
+              if (b) {
+                resolve(b);
+              } else {
+                canvas.toBlob((png) => resolve(png), 'image/png');
+              }
+            }, 'image/webp', 0.92);
+          });
+
+          if (!blob) return spec.url;
+          return URL.createObjectURL(blob);
+        } catch (err) {
+          return spec.url;
+        }
+      }
+
+      /* ========================================================================
+         4. Exact Cubic-Bezier Easing Solver & Channel Engine
+         ======================================================================== */
+      function cubicBezier(x1, y1, x2, y2) {
+        const cx = 3 * x1;
+        const bx = 3 * (x2 - x1) - cx;
+        const ax = 1 - cx - bx;
+
+        const cy = 3 * y1;
+        const by = 3 * (y2 - y1) - cy;
+        const ay = 1 - cy - by;
+
+        const sampleX = (t) => ((ax * t + bx) * t + cx) * t;
+        const sampleY = (t) => ((ay * t + by) * t + cy) * t;
+        const sampleDX = (t) => (3 * ax * t + 2 * bx) * t + cx;
+
+        return function (x) {
+          if (x <= 0) return 0;
+          if (x >= 1) return 1;
+
+          // Newton-Raphson refinement
+          let t = x;
+          for (let i = 0; i < 8; i++) {
+            const err = sampleX(t) - x;
+            if (Math.abs(err) < 1e-6) return sampleY(t);
+            const d = sampleDX(t);
+            if (Math.abs(d) < 1e-6) break;
+            t -= err / d;
+            if (t < 0 || t > 1) break;
+          }
+
+          // Fallback bisection for guaranteed convergence
+          let lo = 0;
+          let hi = 1;
+          t = x;
+          for (let i = 0; i < 16; i++) {
+            const val = sampleX(t);
+            if (Math.abs(val - x) < 1e-6) break;
+            if (x > val) lo = t;
+            else hi = t;
+            t = 0.5 * (lo + hi);
+          }
+          return sampleY(t);
+        };
+      }
+
+      const EI = cubicBezier(0.5, 0, 0, 1);    // Load intro rise
+      const EJ = cubicBezier(0.3, 0, 0.05, 1); // Jar moves
+      const EP = cubicBezier(0.3, 0, 0.15, 1); // Panels & fades
+      const EF = cubicBezier(0.25, 0.1, 0.25, 1); // Opacity
+      const EY = cubicBezier(0.5, 0, 0.1, 1);  // Delayed drop
+
+      class ScalarChannel {
+        constructor(initial) {
+          this.val = initial;
+          this.queue = [];
+          this.seg = null;
+        }
+
+        snap(v) {
+          this.val = v;
+          this.queue.length = 0;
+          this.seg = null;
+        }
+
+        to(target, dur, ease, delay = 0, now = performance.now()) {
+          this.queue = [{ to: target, dur, ease, delay }];
+          this.seg = null;
+          this._startNext(now);
+        }
+
+        _startNext(now) {
+          if (this.queue.length === 0) {
+            this.seg = null;
+            return;
+          }
+          const next = this.queue.shift();
+          this.seg = {
+            from: this.val,
+            to: next.to,
+            start: now + (next.delay || 0),
+            dur: Math.max(0, next.dur || 0),
+            ease: next.ease || EF
+          };
+        }
+
+        eval(now) {
+          if (!this.seg) return this.val;
+          if (now < this.seg.start) return this.val;
+          if (this.seg.dur === 0) {
+            this.val = this.seg.to;
+            this._startNext(now);
+            return this.val;
+          }
+          const t = (now - this.seg.start) / this.seg.dur;
+          if (t >= 1) {
+            this.val = this.seg.to;
+            this._startNext(now);
+            return this.val;
+          }
+          this.val = this.seg.from + (this.seg.to - this.seg.from) * this.seg.ease(t);
+          return this.val;
+        }
+      }
+
+      class VecChannel {
+        constructor(initialArr) {
+          this.axes = initialArr.map((v) => new ScalarChannel(v));
+        }
+
+        snap(arr) {
+          for (let i = 0; i < this.axes.length; i++) {
+            this.axes[i].snap(arr[i]);
+          }
+        }
+
+        /**
+         * Move all axes with either uniform (dur, ease) or per-axis specs.
+         */
+        to(targetArr, durOrSpecs, ease, delay = 0, now = performance.now()) {
+          if (Array.isArray(durOrSpecs)) {
+            for (let i = 0; i < this.axes.length; i++) {
+              const sp = durOrSpecs[i];
+              this.axes[i].to(targetArr[i], sp.dur, sp.ease, sp.delay || 0, now);
+            }
+          } else {
+            for (let i = 0; i < this.axes.length; i++) {
+              this.axes[i].to(targetArr[i], durOrSpecs, ease, delay, now);
+            }
+          }
+        }
+
+        eval(now) {
+          return this.axes.map((ax) => ax.eval(now));
+        }
+      }
+
+      /* ========================================================================
+         5. Layout & Responsive Geometry (Desktop / Landscape & Portrait)
+         ======================================================================== */
+      const layout = {
+        vw: 1440,
+        vh: 900,
+        s: 1,
+        c: 1,
+        fl: 0,
+        ft: 0,
+        ul: 0,
+        ut: 0,
+        portrait: false,
+        W: 466,
+        hw: 915,
+        hx0: 0,
+        handTop: 0,
+        K0: { x: 720, y: 490, w: 290 },
+        K1: { x: 720, y: 1012, w: 466 },
+        K2: { x: 465, y: 640, w: 300 },
+        K4: { x: 720, y: 697, w: 183 }
+      };
+
+      function F(x, y, w) {
+        return {
+          x: layout.fl + x * layout.s,
+          y: layout.ft + y * layout.s,
+          w: w * layout.s
+        };
+      }
+
+      function U(x, y, w) {
+        return {
+          x: layout.ul + x * layout.c,
+          y: layout.ut + y * layout.c,
+          w: w * layout.c
+        };
+      }
+
+      /**
+       * Measures the wordmark text node with a DOM Range so it fits exact width
+       * and sits behind the upper quarter of the jar at K0, clear of the nav.
+       */
+      function layoutWordmark(navBottom) {
+        const targetW = layout.portrait
+          ? 0.9 * layout.vw
+          : Math.min(960 * layout.s, 0.9 * layout.vw);
+
+        const textNode = wordmarkEl.firstChild;
+        if (!textNode) return;
+
+        wordmarkEl.style.fontSize = '100px';
+        const range = document.createRange();
+        range.selectNodeContents(textNode);
+
+        let w0 = range.getBoundingClientRect().width;
+        let fs = w0 > 0 ? 100 * (targetW / w0) : targetW * 0.3;
+        wordmarkEl.style.fontSize = fs + 'px';
+
+        // Second pass compensates for optical kerning/rounding
+        const w1 = range.getBoundingClientRect().width;
+        if (w1 > 0) {
+          fs = fs * (targetW / w1);
+          wordmarkEl.style.fontSize = fs + 'px';
+        }
+
+        const jarH = layout.K0.w * JAR_R;
+        const jarTop = layout.K0.y - jarH;
+        const desiredCapCenter = jarTop + 0.25 * jarH;
+
+        // Cap top is 0.20*fs below element top; cap height is 0.708*fs
+        let top = desiredCapCenter - (0.2 + 0.708 * 0.5) * fs;
+        if (top + 0.2 * fs < navBottom + 12) {
+          top = navBottom + 12 - 0.2 * fs;
+        }
+        wordmarkEl.style.top = top + 'px';
+      }
+
+      function computeLayout() {
+        const vw = window.innerWidth;
+        const vh = stageEl.clientHeight || window.innerHeight;
+        const s = Math.max(vw / 1440, vh / 900);
+        const c = Math.min(vw / 1440, vh / 900);
+        const fl = (vw - 1440 * s) / 2;
+        const ft = (vh - 900 * s) / 2;
+        const ul = (vw - 1440 * c) / 2;
+        const ut = (vh - 900 * c) / 2;
+        const portrait = (vw / vh) < 0.9;
+
+        layout.vw = vw;
+        layout.vh = vh;
+        layout.s = s;
+        layout.c = c;
+        layout.fl = fl;
+        layout.ft = ft;
+        layout.ul = ul;
+        layout.ut = ut;
+        layout.portrait = portrait;
+
+        docEl.classList.toggle('portrait', portrait);
+        docEl.style.setProperty('--s', s + 'px');
+        docEl.style.setProperty('--c', c + 'px');
+        docEl.style.setProperty('--fl', fl + 'px');
+        docEl.style.setProperty('--ft', ft + 'px');
+
+        const navBottom = navEl.getBoundingClientRect().bottom;
+
+        if (!portrait) {
+          /* ---------------- Desktop / Landscape Layout ---------------- */
+          const chip = Math.max(44, 116 * c);
+          const cn = Math.max(12, 21 * c);
+          const cs = Math.max(11, 17.5 * c);
+
+          docEl.style.setProperty('--chip', chip + 'px');
+          docEl.style.setProperty('--cn', cn + 'px');
+          docEl.style.setProperty('--cs', cs + 'px');
+
+          const kx = Math.max(c, (0.96 * vw) / 1440);
+          const dy = Math.max(0, navBottom + 6 - (ut + 196 * c - chip / 2));
+
+          Object.keys(DESKTOP_CHIPS).forEach((key) => {
+            const pt = DESKTOP_CHIPS[key];
+            const el = chipEls[key];
+            const sx = vw / 2 + (pt.x - 720) * kx;
+            const sy = ut + pt.y * c + dy;
+            el.style.left = sx + 'px';
+            el.style.top = sy + 'px';
+            const sub = el.querySelector('.csub');
+            if (sub) sub.style.maxWidth = '';
+          });
+
+          // Benefits
+          const rt = Math.max(48, 96 * c);
+          const rh = Math.max(14, 25 * c);
+          const rp = Math.max(11, 16.5 * c);
+          const rg = Math.max(14, 40 * c);
+          const rw = Math.max(200, 330 * c);
+
+          docEl.style.setProperty('--rt', rt + 'px');
+          docEl.style.setProperty('--rh', rh + 'px');
+          docEl.style.setProperty('--rp', rp + 'px');
+          docEl.style.setProperty('--rg', rg + 'px');
+          docEl.style.setProperty('--rw', rw + 'px');
+
+          const rowsLeft = ul + 915 * c;
+          const rowsRightPad = Math.max(12, 24 * c);
+          rowsEl.style.left = rowsLeft + 'px';
+          rowsEl.style.right = rowsRightPad + 'px';
+          rowsEl.style.top = '50%';
+          rowsEl.style.transform = 'translateY(-44%)';
+
+          // Guard on very short landscape viewports (e.g. 568x320) so rows stay clear of nav
+          const rRect = rowsEl.getBoundingClientRect();
+          if (rRect.height > 0 && rRect.top < navBottom + 8) {
+            const safeTop = navBottom + 8;
+            const availH = vh - safeTop - 8;
+            rowsEl.style.top = (safeTop + Math.max(0, (availH - rRect.height) / 2)) + 'px';
+            rowsEl.style.transform = 'none';
+          }
+
+          // CTA
+          docEl.style.setProperty('--th', Math.max(17, 34 * c) + 'px');
+          docEl.style.setProperty('--tf', Math.max(12, 16 * c) + 'px');
+          docEl.style.setProperty('--tb', Math.max(16, 30 * c) + 'px');
+          ctaEl.style.top = Math.max(navBottom + 10, ut + 150 * c) + 'px';
+
+          // Jar Keyframes
+          layout.K0 = F(720, 490, 290);
+          layout.K1 = U(720, 1012, 466);
+          layout.K1.y += dy;
+
+          layout.K2 = U(465, 640, 300);
+          layout.hw = layout.K2.w * 3.05;
+          layout.hx0 = layout.K2.x - 0.56 * layout.hw;
+          layout.K2.x = layout.hx0 + 0.63 * layout.hw;
+          layout.handTop =
+            layout.K2.y + 0.13 * (layout.K2.w * JAR_R) - 0.30 * (layout.hw * HAND_R);
+
+          layout.K4 = F(720, 697, 183);
+        } else {
+          /* ---------------- Portrait Layout (vw/vh < 0.9) ---------------- */
+          const chip = Math.min(Math.max(58, 0.17 * vw), 96);
+          const cn = Math.min(Math.max(12, 0.034 * vw), 17);
+          const cs = Math.min(Math.max(11, 0.029 * vw), 15);
+
+          docEl.style.setProperty('--chip', chip + 'px');
+          docEl.style.setProperty('--cn', cn + 'px');
+          docEl.style.setProperty('--cs', cs + 'px');
+
+          const top = Math.max(
+            Math.max(64, 0.06 * vh) + chip / 2 + 8,
+            navBottom + 8 + chip / 2
+          );
+          let row2 = top + chip + Math.max(84, 0.10 * vh);
+
+          const topRowPositions = {
+            lavender:  { x: 0.20 * vw, y: top + 0.35 * chip + 0.55 * chip },
+            honeycomb: { x: 0.50 * vw, y: top + 0.55 * chip },
+            pollen:    { x: 0.80 * vw, y: top + 0.35 * chip + 0.55 * chip }
+          };
+
+          Object.keys(topRowPositions).forEach((key) => {
+            const el = chipEls[key];
+            el.style.left = topRowPositions[key].x + 'px';
+            el.style.top = topRowPositions[key].y + 'px';
+            const sub = el.querySelector('.csub');
+            if (sub) sub.style.maxWidth = Math.min(2.3 * chip, 0.29 * vw) + 'px';
+          });
+
+          // Measure row 1 labels to guarantee row 2 circles never overlap them
+          let row1Bottom = 0;
+          ['lavender', 'honeycomb', 'pollen'].forEach((key) => {
+            const el = chipEls[key];
+            const elTop = parseFloat(el.style.top) - chip / 2;
+            const b = elTop + el.offsetHeight;
+            if (b > row1Bottom) row1Bottom = b;
+          });
+
+          const minRow2Center = row1Bottom + 8 + chip / 2;
+          if (row2 + 0.55 * chip < minRow2Center) {
+            row2 = minRow2Center - 0.55 * chip;
+          }
+
+          const bottomRowPositions = {
+            acacia: { x: 0.25 * vw, y: row2 + 0.55 * chip },
+            resin:  { x: 0.75 * vw, y: row2 + 0.55 * chip }
+          };
+
+          let lowestChipBottom = row1Bottom;
+          Object.keys(bottomRowPositions).forEach((key) => {
+            const el = chipEls[key];
+            el.style.left = bottomRowPositions[key].x + 'px';
+            el.style.top = bottomRowPositions[key].y + 'px';
+            const sub = el.querySelector('.csub');
+            if (sub) sub.style.maxWidth = Math.min(2.3 * chip, 0.44 * vw) + 'px';
+
+            const elTop = bottomRowPositions[key].y - chip / 2;
+            const b = elTop + el.offsetHeight;
+            if (b > lowestChipBottom) lowestChipBottom = b;
+          });
+
+          // Benefits
+          const rt = Math.min(Math.max(48, 0.13 * vw), 76);
+          const rh = Math.min(Math.max(15, 0.042 * vw), 22);
+          const rp = Math.min(Math.max(12, 0.033 * vw), 16);
+          const rg = Math.min(Math.max(12, 0.022 * vh), 26);
+
+          docEl.style.setProperty('--rt', rt + 'px');
+          docEl.style.setProperty('--rh', rh + 'px');
+          docEl.style.setProperty('--rp', rp + 'px');
+          docEl.style.setProperty('--rg', rg + 'px');
+          docEl.style.setProperty('--rw', 'none');
+
+          const sidePad = Math.max(18, 0.06 * vw);
+          const beneTop = Math.max(Math.max(64, 0.07 * vh) + 10, navBottom + 10);
+          rowsEl.style.left = sidePad + 'px';
+          rowsEl.style.right = sidePad + 'px';
+          rowsEl.style.top = beneTop + 'px';
+          rowsEl.style.transform = 'none';
+
+          // CTA
+          docEl.style.setProperty('--th', Math.min(Math.max(16, 0.052 * vw), 34) + 'px');
+          docEl.style.setProperty('--tf', '14px');
+          docEl.style.setProperty('--tb', '20px');
+          ctaEl.style.top = Math.max(Math.max(84, 0.13 * vh), navBottom + 14) + 'px';
+
+          // Jar Keyframes (Portrait)
+          layout.K0 = F(720, 490, 290);
+          layout.K0.w = Math.min(layout.K0.w, 0.48 * vw);
+
+          const w1 = Math.min(0.72 * vw, 0.42 * vh);
+          layout.K1 = {
+            x: vw / 2,
+            y: Math.max(vh + 0.16 * w1 * JAR_R, lowestChipBottom + 10 + w1 * JAR_R),
+            w: w1
+          };
+
+          const w2 = Math.min(0.40 * vw, 0.22 * vh);
+          let y2 = 0.80 * vh;
+
+          // Ensure jar top stays clear of portrait benefit rows
+          const rowsBottom = beneTop + rowsEl.offsetHeight;
+          const minY2 = rowsBottom + 12 + w2 * JAR_R;
+          if (y2 < minY2) {
+            y2 = Math.min(0.88 * vh, minY2);
+          }
+
+          layout.K2 = { x: vw / 2, y: y2, w: w2 };
+          layout.hw = 3.2 * layout.K2.w;
+          layout.hx0 = vw / 2 - 0.63 * layout.hw;
+          layout.handTop =
+            layout.K2.y + 0.13 * (layout.K2.w * JAR_R) - 0.30 * (layout.hw * HAND_R);
+
+          layout.K4 = F(720, 697, 183);
+        }
+
+        // Fixed jar CSS width = largest keyframe width
+        layout.W = Math.max(layout.K0.w, layout.K1.w, layout.K2.w, layout.K4.w);
+        jarEl.style.width = layout.W + 'px';
+        handEl.style.width = layout.hw + 'px';
+
+        // Wordmark sizing & vertical placement
+        layoutWordmark(navBottom);
+      }
+
+      /* ========================================================================
+         6. Scene State & Channels
+         ======================================================================== */
+      let state = 0;
+      let introDone = false;
+      let classTimer = null;
+
+      const ch = {
+        introOffset: new ScalarChannel(0),
+        jar:         new VecChannel([720, 490, 290]),
+        hero:        new ScalarChannel(1),
+        bene:        new ScalarChannel(0),
+        handOut:     new ScalarChannel(0),
+        rows:        new ScalarChannel(0),
+        scene:       new ScalarChannel(0)
+      };
+
+      function keyForState(s) {
+        if (s === 0) return layout.K0;
+        if (s === 1) return layout.K1;
+        if (s === 2) return layout.K2;
+        return layout.K4;
+      }
+
+      function snapToCurrentState() {
+        const K = keyForState(state);
+        ch.jar.snap([K.x, K.y, K.w]);
+        ch.hero.snap(state === 0 ? 1 : 0);
+        ch.bene.snap(state === 2 || state === 3 ? 1 : 0);
+        ch.handOut.snap(state === 3 ? 1 : 0);
+        ch.rows.snap(state === 2 ? 1 : 0);
+        ch.scene.snap(state === 3 ? 1 : 0);
+
+        ingrEl.classList.toggle('on', state === 1);
+        beneEl.classList.toggle('on', state === 2);
+        sceneEl.classList.toggle('on', state === 3);
+      }
+
+      function clearClassTimer() {
+        if (classTimer !== null) {
+          clearTimeout(classTimer);
+          classTimer = null;
+        }
+      }
+
+      /**
+       * Transitions smoothly from the current live channel values to target scene n (0..3).
+       */
+      function go(n, instant = false) {
+        const target = Math.max(0, Math.min(3, Math.round(Number(n) || 0)));
+        if (target === state && !instant) return;
+
+        const prev = state;
+        state = target;
+        clearClassTimer();
+
+        if (instant || reducedMotion) {
+          ch.introOffset.snap(0);
+          snapToCurrentState();
+          renderFrame(performance.now());
+          return;
+        }
+
+        const now = performance.now();
+
+        if (target === 0) {
+          // To 0 (Hero)
+          ingrEl.classList.remove('on');
+          beneEl.classList.remove('on');
+          sceneEl.classList.remove('on');
+
+          ch.jar.to([layout.K0.x, layout.K0.y, layout.K0.w], 1150, EJ, 0, now);
+          ch.hero.to(1, 700, EP, 0, now);
+          ch.bene.to(0, 650, EP, 0, now);
+          ch.handOut.to(0, 600, EP, 0, now);
+          ch.rows.to(0, 400, EF, 0, now);
+          ch.scene.to(0, 650, EP, 0, now);
+        } else if (target === 1) {
+          // To 1 (Ingredients)
+          beneEl.classList.remove('on');
+          sceneEl.classList.remove('on');
+          ingrEl.classList.remove('on');
+
+          ch.jar.to([layout.K1.x, layout.K1.y, layout.K1.w], 1150, EJ, 0, now);
+          ch.hero.to(0, 700, EP, 0, now);
+          ch.bene.to(0, 650, EP, 0, now);
+          ch.handOut.to(0, 600, EP, 0, now);
+          ch.rows.to(0, 400, EF, 0, now);
+          ch.scene.to(0, 650, EP, 0, now);
+
+          const delay = prev < 1 ? 1000 : 600;
+          classTimer = setTimeout(() => {
+            if (state === 1) ingrEl.classList.add('on');
+          }, delay);
+        } else if (target === 2) {
+          // To 2 (Benefits)
+          ingrEl.classList.remove('on');
+          sceneEl.classList.remove('on');
+          beneEl.classList.remove('on');
+
+          ch.jar.to([layout.K2.x, layout.K2.y, layout.K2.w], 1150, EJ, 0, now);
+          ch.hero.to(0, 700, EP, 0, now);
+          ch.bene.to(1, 650, EP, 0, now);
+          ch.scene.to(0, 650, EP, 0, now);
+
+          if (prev === 3) {
+            ch.handOut.to(0, 650, EP, 150, now);
+            ch.rows.to(1, 500, EF, 300, now);
+          } else {
+            ch.handOut.to(0, 600, EP, 0, now);
+            ch.rows.to(1, 500, EF, 0, now);
+          }
+
+          const delay = prev < 2 ? 550 : 350;
+          classTimer = setTimeout(() => {
+            if (state === 2) beneEl.classList.add('on');
+          }, delay);
+        } else if (target === 3) {
+          // To 3 (Final Scene)
+          ingrEl.classList.remove('on');
+          beneEl.classList.remove('on');
+          sceneEl.classList.remove('on');
+
+          if (prev === 2) {
+            // Continuous curved path from palm to pedestal using per-axis timings
+            ch.jar.to(
+              [layout.K4.x, layout.K4.y, layout.K4.w],
+              [
+                { dur: 700,  ease: EJ, delay: 0 },
+                { dur: 1600, ease: EY, delay: 0 },
+                { dur: 1600, ease: EJ, delay: 0 }
+              ],
+              null,
+              0,
+              now
+            );
+          } else {
+            ch.jar.to([layout.K4.x, layout.K4.y, layout.K4.w], 1150, EJ, 0, now);
+          }
+
+          ch.hero.to(0, 700, EP, 0, now);
+          ch.handOut.to(1, 600, EP, 0, now);
+          ch.rows.to(0, 400, EF, 0, now);
+          ch.scene.to(1, 650, EP, 350, now);
+
+          classTimer = setTimeout(() => {
+            if (state === 3) sceneEl.classList.add('on');
+          }, 1350);
+        }
+      }
+
+      /* ========================================================================
+         7. Hero Water Seamless Crossfade Video Loop
+         ======================================================================== */
+      let activeVid = vidA;
+      let standbyVid = vidB;
+      let videoStarted = false;
+      let videoPausedForHidden = false;
+      let crossfading = false;
+      let fadeStart = 0;
+
+      function startHeroVideo() {
+        if (reducedMotion || videoStarted) return;
+        videoStarted = true;
+        activeVid = vidA;
+        standbyVid = vidB;
+
+        activeVid.style.zIndex = '1';
+        standbyVid.style.zIndex = '2';
+        standbyVid.style.opacity = '0';
+
+        const onPlaying = () => {
+          if (!reducedMotion && activeVid === vidA) {
+            activeVid.style.opacity = '1';
+          }
+          activeVid.removeEventListener('playing', onPlaying);
+        };
+        activeVid.addEventListener('playing', onPlaying);
+
+        try {
+          activeVid.currentTime = 0;
+          const p = activeVid.play();
+          if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (_) {}
+      }
+
+      function stopVideos() {
+        crossfading = false;
+        videoStarted = false;
+        [vidA, vidB].forEach((v) => {
+          try { v.pause(); } catch (_) {}
+          v.style.opacity = '0';
+        });
+      }
+
+      function updateHeroVideo(now, heroVal) {
+        if (reducedMotion || !videoStarted) return;
+
+        const heroHidden = state !== 0 && heroVal < 0.01;
+        if (heroHidden) {
+          if (!videoPausedForHidden) {
+            videoPausedForHidden = true;
+            crossfading = false;
+            try { activeVid.pause(); } catch (_) {}
+            try { standbyVid.pause(); } catch (_) {}
+            standbyVid.style.opacity = '0';
+          }
+          return;
+        }
+
+        if (videoPausedForHidden) {
+          videoPausedForHidden = false;
+          try {
+            const p = activeVid.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+          } catch (_) {}
+        }
+
+        if (!crossfading) {
+          const dur = activeVid.duration;
+          if (dur > 0 && isFinite(dur) && !activeVid.paused && dur - activeVid.currentTime <= 0.6) {
+            crossfading = true;
+            fadeStart = now;
+            standbyVid.style.zIndex = '2';
+            activeVid.style.zIndex = '1';
+            standbyVid.style.opacity = '0';
+            try {
+              standbyVid.currentTime = 0;
+              const p = standbyVid.play();
+              if (p && typeof p.catch === 'function') p.catch(() => {});
+            } catch (_) {}
+          }
+        } else {
+          const p = Math.min(1, (now - fadeStart) / 600);
+          standbyVid.style.opacity = p.toFixed(4);
+          if (p >= 1) {
+            try { activeVid.pause(); } catch (_) {}
+            activeVid.style.opacity = '0';
+            activeVid.style.zIndex = '1';
+            standbyVid.style.zIndex = '1';
+
+            const prevActive = activeVid;
+            activeVid = standbyVid;
+            standbyVid = prevActive;
+            crossfading = false;
+          }
+        }
+      }
+
+      /* ========================================================================
+         8. Main Render Loop (Single Evaluation per rAF)
+         ======================================================================== */
+      function renderFrame(now) {
+        const introOff = ch.introOffset.eval(now);
+        const [jx, jy, jw] = ch.jar.eval(now);
+        const heroVal = ch.hero.eval(now);
+        const beneVal = ch.bene.eval(now);
+        const handOutVal = ch.handOut.eval(now);
+        const rowsVal = ch.rows.eval(now);
+        const sceneVal = ch.scene.eval(now);
+
+        // Hero opacity & subtle 6% plate zoom + shared intro vertical offset
+        heroEl.style.opacity = heroVal.toFixed(4);
+        const heroScale = 1 + (1 - heroVal) * 0.06;
+        heroFrame.style.transform =
+          `translate3d(0, ${introOff.toFixed(2)}px, 0) scale(${heroScale.toFixed(5)})`;
+
+        // Benefits panel & rows opacity
+        beneEl.style.transform =
+          `translate3d(0, ${((1 - beneVal) * 100).toFixed(4)}%, 0)`;
+        rowsEl.style.opacity = rowsVal.toFixed(4);
+
+        // Final dark scene & nav contrast toggle (> 96%)
+        sceneEl.style.transform =
+          `translate3d(0, ${((1 - sceneVal) * 100).toFixed(4)}%, 0)`;
+        navEl.classList.toggle('light', sceneVal > 0.96);
+
+        // Jar transform (origin 50% 100%, fixed CSS width W)
+        const jarScale = layout.W > 0 ? jw / layout.W : 1;
+        const jarTx = jx - layout.W / 2;
+        const jarTy = jy - layout.W * JAR_R + introOff;
+        jarEl.style.transform =
+          `translate3d(${jarTx.toFixed(2)}px, ${jarTy.toFixed(2)}px, 0) scale(${jarScale.toFixed(5)})`;
+
+        // Hand transform (rides up with benefits panel, exits left)
+        const handTx = layout.hx0 - handOutVal * (layout.hx0 + 1.05 * layout.hw);
+        const handTy = layout.handTop + (1 - beneVal) * layout.vh;
+        handEl.style.transform =
+          `translate3d(${handTx.toFixed(2)}px, ${handTy.toFixed(2)}px, 0)`;
+
+        // Video loop monitoring
+        updateHeroVideo(now, heroVal);
+      }
+
+      function tick(now) {
+        renderFrame(now);
+        requestAnimationFrame(tick);
+      }
+
+      /* ========================================================================
+         9. Input Engine (One Gesture = One Step, 1000 ms Lock)
+         ======================================================================== */
+      let lockUntil = 0;
+      let lastWheelTime = 0;
+      let prevAbsDelta = 0;
+      let wheelAcc = 0;
+
+      function step(dir) {
+        const now = performance.now();
+        if (now < lockUntil) return;
+        const next = Math.max(0, Math.min(3, state + dir));
+        if (next === state) return;
+        lockUntil = now + 1000;
+        go(next);
+      }
+
+      window.addEventListener(
+        'wheel',
+        (e) => {
+          e.preventDefault();
+          const now = performance.now();
+
+          let dy = e.deltaY;
+          if (e.deltaMode === 1) dy *= 16;
+          else if (e.deltaMode === 2) dy *= layout.vh;
+
+          const absDy = Math.abs(dy);
+          const isFresh =
+            now - lastWheelTime > 160 || absDy > 1.6 * prevAbsDelta + 4;
+          if (isFresh) {
+            wheelAcc = 0;
+          }
+
+          lastWheelTime = now;
+          prevAbsDelta = absDy;
+
+          if (now < lockUntil) {
+            wheelAcc = 0;
+            return;
+          }
+
+          wheelAcc += dy;
+          if (Math.abs(wheelAcc) > 24) {
+            const dir = Math.sign(wheelAcc);
+            wheelAcc = 0;
+            step(dir);
+          }
+        },
+        { passive: false }
+      );
+
+      // Touch swipe navigation
+      let touchStartY = 0;
+      let touchStepped = false;
+
+      window.addEventListener(
+        'touchstart',
+        (e) => {
+          if (e.touches.length > 0) {
+            touchStartY = e.touches[0].clientY;
+            touchStepped = false;
+          }
+        },
+        { passive: true }
+      );
+
+      window.addEventListener(
+        'touchmove',
+        (e) => {
+          e.preventDefault();
+          if (touchStepped || e.touches.length === 0) return;
+          const dy = touchStartY - e.touches[0].clientY;
+          if (Math.abs(dy) > 40) {
+            touchStepped = true;
+            step(Math.sign(dy));
+          }
+        },
+        { passive: false }
+      );
+
+      // Keyboard navigation
+      window.addEventListener('keydown', (e) => {
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        const key = e.key;
+        if (key === 'ArrowDown' || key === 'PageDown' || key === ' ' || e.code === 'Space') {
+          e.preventDefault();
+          step(1);
+        } else if (key === 'ArrowUp' || key === 'PageUp') {
+          e.preventDefault();
+          step(-1);
+        } else if (key === 'Home') {
+          e.preventDefault();
+          lockUntil = performance.now() + 1000;
+          go(0);
+        } else if (key === 'End') {
+          e.preventDefault();
+          lockUntil = performance.now() + 1000;
+          go(3);
+        }
+      });
+
+      // Nav links jump directly to their scene
+      navEl.querySelectorAll('a[data-to]').forEach((link) => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = parseInt(link.dataset.to, 10);
+          if (!Number.isNaN(target)) {
+            lockUntil = 0;
+            go(target);
+          }
+        });
+      });
+
+      // Discover CTA returns to Hero (scene 0)
+      discoverEl.addEventListener('click', (e) => {
+        e.preventDefault();
+        lockUntil = 0;
+        go(0);
+      });
+
+      // Resize recomputes layout and snaps every channel to current state
+      let resizeRaf = null;
+      window.addEventListener('resize', () => {
+        if (resizeRaf) cancelAnimationFrame(resizeRaf);
+        resizeRaf = requestAnimationFrame(() => {
+          resizeRaf = null;
+          computeLayout();
+          if (introDone) {
+            ch.introOffset.snap(0);
+          }
+          snapToCurrentState();
+          renderFrame(performance.now());
+        });
+      });
+
+      // Public testing hook
+      window.hiven = {
+        go(n, instant) {
+          go(n, Boolean(instant));
+        },
+        get state() {
+          return state;
+        }
+      };
+
+      /* ========================================================================
+         10. Initialization & Load Intro Sequence
+         ======================================================================== */
+      function startIntro() {
+        if (introDone) return;
+        introDone = true;
+
+        computeLayout();
+        snapToCurrentState();
+
+        if (reducedMotion) {
+          ch.introOffset.snap(0);
+          renderFrame(performance.now());
+          docEl.classList.remove('intro');
+          return;
+        }
+
+        // Position hero plate + jar 27.6% lower before revealing
+        const startOffset = 0.276 * layout.vh;
+        ch.introOffset.snap(startOffset);
+        renderFrame(performance.now());
+
+        // Enable fade transitions for wordmark and nav, then reveal
+        docEl.classList.add('intro-run');
+        // Force reflow so fade-in transitions animate cleanly from opacity 0
+        void stageEl.offsetHeight;
+        docEl.classList.remove('intro');
+
+        const now = performance.now();
+        ch.introOffset.to(0, 1600, EI, 0, now);
+
+        // Start seamless water video loop
+        startHeroVideo();
+
+        // Clean up intro-run helper class after intro fades complete
+        setTimeout(() => {
+          docEl.classList.remove('intro-run');
+        }, 700);
+      }
+
+      async function boot() {
+        // Compute initial layout immediately
+        computeLayout();
+        snapToCurrentState();
+        renderFrame(performance.now());
+
+        // Start main animation loop
+        requestAnimationFrame(tick);
+
+        // 3.5s failsafe removes waiting state even if network is slow
+        const failsafe = setTimeout(() => {
+          if (!jarEl.getAttribute('src')) jarEl.src = ASSETS.jar.url;
+          if (!handEl.getAttribute('src')) handEl.src = ASSETS.hand.url;
+          startIntro();
+        }, 3500);
+
+        const fontsReady = (document.fonts && document.fonts.ready)
+          ? document.fonts.ready.catch(() => {})
+          : Promise.resolve();
+
+        const [jarSrc, handSrc] = await Promise.all([
+          cleanCutout(ASSETS.jar),
+          cleanCutout(ASSETS.hand),
+          fontsReady
+        ]);
+
+        jarEl.src = jarSrc;
+        handEl.src = handSrc;
+
+        // Wait for both cleaned blob images to decode before lifting the curtain
+        await Promise.all([
+          jarEl.decode ? jarEl.decode().catch(() => {}) : Promise.resolve(),
+          handEl.decode ? handEl.decode().catch(() => {}) : Promise.resolve()
+        ]);
+
+        clearTimeout(failsafe);
+        startIntro();
+      }
+
+      boot();
+    })();
+  </script>
+</body>
+</html>
